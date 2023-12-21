@@ -80,8 +80,9 @@ class Boid:
                         self.dir += b.dir / same_direction
                     if first:
                         dir = (self.pos - b.pos)
-                        dir = dir.normalize() / repel
-                        self.dir += dir
+                        if dir != Vector2(0, 0):
+                            dir = dir.normalize() / repel
+                            self.dir += dir
 
                     self.dir = self.dir.normalize()
 
