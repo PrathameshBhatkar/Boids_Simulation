@@ -95,13 +95,15 @@ class Boid:
                 for b in nearby_boids: average_pos += b.pos
                 average_pos /= len(nearby_boids)
                 # find the direction of the average_pos
-                dir = (average_pos - self.pos).normalize()
-                # normalize the vector
-                dir = dir.normalize() / move_to_center
-                # add it to the direction
-                self.dir += dir
-                # normalize the vector
-                self.dir = self.dir.normalize()
+                dir = average_pos - self.pos
+                if dir != Vector2(0, 0):
+                    # normalize the vector
+                    dir = dir.normalize()
+                    dir = dir / move_to_center
+                    # add it to the direction
+                    self.dir += dir
+                    # normalize the vector
+                    self.dir = self.dir.normalize()
             except ZeroDivisionError:
                 pass
 
