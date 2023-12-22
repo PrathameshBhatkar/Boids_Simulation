@@ -23,9 +23,6 @@ class Boid:
     speed is the speed of the boid
     """
     speed = 10
-    repel = True
-    align = True
-    center = True
 
     def __init__(self, x: int, y: int):
         self.pos = Vector2(x, y)
@@ -38,24 +35,24 @@ class Boid:
 
         pygame.draw.circle(screen, COLOR_PINK, self.pos, 2)
 
-    def update(self, height: int, width: int):
+    def update(self, settings):
         # adding the direction to the position
         self.pos = self.pos + (self.dir * self.speed)
         # screen wrapping if the pos is outside the screen
-        if self.pos.x > width:
+        if self.pos.x > settings.width:
             self.pos.x = 0
         if self.pos.x < 0:
-            self.pos.x = width
-        if self.pos.y > height:
+            self.pos.x = settings.width
+        if self.pos.y > settings.height:
             self.pos.y = 0
         if self.pos.y < 0:
-            self.pos.y = height
+            self.pos.y = settings.height
 
     @staticmethod
     def dist_not_squared(p1: Vector2, p2: Vector2):
         return (abs(p1.x - p2.x) ** 2) + (abs(p1.y - p2.y) ** 2)
 
-    def simulate_boid_rules(self, boids, repel: int, align: int, center: int):
+    def simulate_boid_rules(self, boids, settings):
         # make a list of nearby boids
         nearby_boids = []
         for b in boids:
@@ -65,19 +62,19 @@ class Boid:
                     # if the boid is in the view distance add the boid to the nearby_boids list
                     nearby_boids.append(b)
 
-                    if self.align:
-                        self.dir += b.dir / align
-                    if self.repel:
+                    if settings.can_align:
+                        self.dir += b.dir / settings.direction
+                    if settings.can_repel:
                         dir = (self.pos - b.pos)
                         if dir != ZERO_VECTOR:
-                            dir = dir.normalize() / repel
+                            dir = dir.normalize() / settings.repel
                             self.dir += dir
 
                     self.dir = self.dir.normalize()
 
         # loop over nearby_boids
         # find average of the positions of the nearby_boids
-        if self.center:
+        if settings.can_center:
             try:
                 average_pos = Vector2(0, 0)
                 # add all the positions of the nearby_boids to the average_pos
@@ -88,7 +85,7 @@ class Boid:
                 if dir != ZERO_VECTOR:
                     # normalize the vector
                     dir = dir.normalize()
-                    dir = dir / center
+                    dir = dir / settings.center
                     # add it to the direction
                     self.dir += dir
                     # normalize the vector
