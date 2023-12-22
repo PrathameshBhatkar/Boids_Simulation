@@ -1,2 +1,3 @@
 [ ] Integrate binary tree into the boid rules algorithm
     [ ] Find way to update the binary tree when the boids' positions are updated
+    [ ] Find way to store the tree nodes within the boid class objects
