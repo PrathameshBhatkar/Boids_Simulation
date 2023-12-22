@@ -5,6 +5,8 @@ from typing import List
 import pygame
 
 from boids import Boid
+from boid_tree import BoidNode
+from tree import BinaryTree
 
 
 # Colour
@@ -85,6 +87,11 @@ if __name__ == '__main__':
 
     # ********************************************************
     boids = [Boid(random.randint(0, width), random.randint(0, height)) for _ in range(num)]
+
+    # generate binary tree
+    btree = BinaryTree()
+    for b in boids:
+        btree.add_node(BoidNode(b))
 
     while True:
         for event in pygame.event.get():
