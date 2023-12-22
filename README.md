@@ -24,12 +24,13 @@ The Boids algorithm is a simple algorithm which has 3 main rules:
 * I only tested it on Windows 10 🙄
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
 ### Installing
 
 * Download the code from by cloning the GitHub repository
 * Open a command prompt and type:
 ```
-    pip install pygame
+    pip install -r requirements.txt
 ```
 * You Don't need to install any other dependencies.
 
@@ -37,20 +38,25 @@ The Boids algorithm is a simple algorithm which has 3 main rules:
 
 ### Executing program
 
-* Open the `Boids.py` file in your text editor.
-* Run the program.
-* All the instructions are in the `Boids.py` file.
-
-* You can also run the program from the command line by running.
-
+* From the commandline, cd into the repo directory and run the following command:
 ```
-    python Boids.py
+python main.py
 ```
+* Controls:
+
+  1. Press `s` to enable the simulation
+  2. Press `w` to activate Repel force
+  3. Press `e` to activate 'Point on same direction' / 'Align' force
+  4. Press `r` to activate 'move to center' force
+  5. Press `up` and `down` arrow keys to change the values of selected variable during simulation
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Authors
 
 Prathamesh Bhatkar aka 🐱‍👤 [Ninja Cat Cder](https://www.codegrepper.com/profile/prathamesh-bhatkar)
+
+Aaron Jencks aka [aaron-jencks](https://github.com/aaron-jencks)
 
 ## License
 
