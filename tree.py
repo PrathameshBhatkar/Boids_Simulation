@@ -103,6 +103,9 @@ class BinaryTree:
         return current
     
     def delete_node(self, n: Node):
+        """
+        removes a node from the tree, if it exists
+        """
         if n not in self:
             return
         
@@ -126,6 +129,11 @@ class BinaryTree:
         self.count -= 1
 
     def reinsert_node(self, n: Node):
+        """
+        first deletes a node from the tree,
+        then adds it back into the tree,
+        this can be used to update nodes after their values have changed.
+        """
         self.delete_node(n)
         self.add_node(n)
     
