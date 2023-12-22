@@ -33,6 +33,24 @@ class BinaryTree:
     """
     def __init__(self):
         self.root = None
+        self.count = 0
+
+    def __len__(self) -> int:
+        return self.count
+
+    def __contains__(self, obj: Node) -> bool:
+        if len(self) == 0: return False
+
+        current = self.root
+        while obj is not current:
+            if obj <= current:
+               if current.left is None: return False
+               current = current.left
+            else:
+                if current.right is None: return False
+                current = current.right
+
+        return True 
 
     def add_node(self, n: Node):
         """
@@ -40,6 +58,7 @@ class BinaryTree:
         """
         if self.root is None:
             self.root = n
+            self.count += 1
             return
         
         current = self.root
@@ -48,6 +67,7 @@ class BinaryTree:
                 if current.right == None:
                     current.right = n
                     n.parent = current
+                    self.count += 1
                     return
                 current = current.right
                 continue
@@ -56,6 +76,7 @@ class BinaryTree:
                 if current.left == None:
                     current.left = n
                     n.parent = current
+                    self.count += 1
                     return
                 current = current.left
 
@@ -81,49 +102,32 @@ class BinaryTree:
         while current.right is not None: current = current.right
         return current
     
-    @staticmethod
-    def recheck_position(n: Optional[Node]):
-        """
-        re checks that n satisfies the binary tree constraint
-
-        only checks for the current node and does not check other nodes
-        """
-        v = n.value()
-        current = n
-        while True:
-            if current.right is not None and v > current.right.value():
-                # we're larger than the right child, move to the right
-                current = current.right
-            elif current.left is not None and v < current.left.value():
-                # we're smaller than the left child, move to the left
-                current = current.left
-            elif current.parent is not None:
-                if current.parent.right is current and v < current.parent.value():
-                    # we're the parent's right child and we're smaller than the parent, move up
-                    current = current.parent
-                elif current.parent.left is current and v > current.parent.value():
-                    # we're the parent's left child and we're larger than the parent, move up
-                    current = current.parent
-            else:
-                break
-
-        # Rotates the current node to the right
-        #
-        # F            F
-        #  \            \
-        #   A            B
-        #  / \          / \
-        # C   B   =>   D   A
-        #    / \      /     \
-        #   D   E    C       E
-        #
-        l = n.left
-        if l is not None:
-            BinaryTree.min(n.right).left = l
-        n.right.parent = n.parent
-        n.right = n.right.right
-        n.left = None
+    def delete_node(self, n: Node):
+        if n not in self:
+            return
         
+        if self.count == 1:
+            self.root = None
+            self.count = 0
+            return
+
+        replacement = self.min(n.right)
+        if replacement is None:
+            replacement = self.max(n.left)
+        replacement.parent = None  # we know at this point one of these must not be None
+
+        if n is self.root:
+            self.root = replacement
+
+        replacement.parent = n.parent
+        if n.right is not replacement: replacement.right = n.right
+        if n.left is not replacement: replacement.left = n.left
+
+        self.count -= 1
+
+    def reinsert_node(self, n: Node):
+        self.delete_node(n)
+        self.add_node(n)
     
     def find_lower_limit(self, limit: int) -> Optional[Node]:
         """
