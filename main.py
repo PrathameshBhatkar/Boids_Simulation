@@ -1,5 +1,4 @@
 import random
-import sys
 import argparse
 from typing import List
 
@@ -32,7 +31,7 @@ def setup_args() -> argparse.ArgumentParser:
     return parser
 
 
-def draw_window(settings, boids: List[Boid]):
+def draw_window(settings, screen, boids: List[Boid]):
     """
     draws the window
     """
@@ -55,7 +54,7 @@ def draw_window(settings, boids: List[Boid]):
 
     # draw all boids
     for b in boids:
-        b.draw()
+        b.draw(screen)
 
     pygame.display.flip()
 
@@ -91,19 +90,20 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
+                exit(0)
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_s: can_simulate = not can_simulate
+                if event.key == pygame.K_s: settings.simulate = not settings.simulate
 
-                if event.key == pygame.K_w: first = not first
-                if event.key == pygame.K_e: second = not second
-                if event.key == pygame.K_r: third = not third
+                if event.key == pygame.K_w: settings.can_repel = not settings.can_repel
+                if event.key == pygame.K_e: settings.can_align = not settings.can_align
+                if event.key == pygame.K_r: settings.can_center = not settings.can_center
 
                 # press 1,2 or 3 to change the selected variable to the corresponding one
                 if event.key == pygame.K_1: settings.selected = 0
                 if event.key == pygame.K_2: settings.selected = 1
                 if event.key == pygame.K_3: settings.selected = 2
+
         keys = pygame.key.get_pressed()
 
         # check if the up key is pressed
@@ -140,8 +140,8 @@ if __name__ == '__main__':
         for b in boids:
             b.update(settings)
             # if the variable can_simulate is true, then call the simulate function
-            if can_simulate:
+            if settings.simulate:
                 b.simulate_boid_rules(boids, settings)
 
-        draw_window(settings, boids)
+        draw_window(settings, screen, boids)
         clock.tick(settings.fps)
