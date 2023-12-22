@@ -70,6 +70,7 @@ class BinaryTree:
         while current.left is not None: current = current.left
         return current
     
+    @staticmethod
     def max(n: Optional[Node]) -> Optional[Node]:
         """
         returns the largest element in the tree, this is the right most node
@@ -79,6 +80,50 @@ class BinaryTree:
         current = n
         while current.right is not None: current = current.right
         return current
+    
+    @staticmethod
+    def recheck_position(n: Optional[Node]):
+        """
+        re checks that n satisfies the binary tree constraint
+
+        only checks for the current node and does not check other nodes
+        """
+        v = n.value()
+        current = n
+        while True:
+            if current.right is not None and v > current.right.value():
+                # we're larger than the right child, move to the right
+                current = current.right
+            elif current.left is not None and v < current.left.value():
+                # we're smaller than the left child, move to the left
+                current = current.left
+            elif current.parent is not None:
+                if current.parent.right is current and v < current.parent.value():
+                    # we're the parent's right child and we're smaller than the parent, move up
+                    current = current.parent
+                elif current.parent.left is current and v > current.parent.value():
+                    # we're the parent's left child and we're larger than the parent, move up
+                    current = current.parent
+            else:
+                break
+
+        # Rotates the current node to the right
+        #
+        # F            F
+        #  \            \
+        #   A            B
+        #  / \          / \
+        # C   B   =>   D   A
+        #    / \      /     \
+        #   D   E    C       E
+        #
+        l = n.left
+        if l is not None:
+            BinaryTree.min(n.right).left = l
+        n.right.parent = n.parent
+        n.right = n.right.right
+        n.left = None
+        
     
     def find_lower_limit(self, limit: int) -> Optional[Node]:
         """
