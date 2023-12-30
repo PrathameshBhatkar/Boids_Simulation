@@ -33,7 +33,7 @@ def setup_args() -> argparse.ArgumentParser:
     return parser
 
 
-def draw_window(settings, screen, boids: List[Boid]):
+def draw_window(settings, screen, boids: List[BoidNode]):
     """
     draws the window
     """
@@ -56,7 +56,7 @@ def draw_window(settings, screen, boids: List[Boid]):
 
     # draw all boids
     for b in boids:
-        b.draw(screen)
+        b.boid.draw(screen)
 
     pygame.display.flip()
 
@@ -86,12 +86,12 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
 
     # ********************************************************
-    boids = [Boid(random.randint(0, width), random.randint(0, height)) for _ in range(num)]
+    boids = [BoidNode(Boid(random.randint(0, width), random.randint(0, height))) for _ in range(num)]
 
     # generate binary tree
     btree = BinaryTree()
     for b in boids:
-        btree.add_node(BoidNode(b))
+        btree.add_node(b)
 
     while True:
         for event in pygame.event.get():
@@ -145,10 +145,12 @@ if __name__ == '__main__':
 
         # update all the boids
         for b in boids:
-            b.update(settings)
+            b.boid.update(settings)
             # if the variable can_simulate is true, then call the simulate function
             if settings.simulate:
-                b.simulate_boid_rules(boids, settings)
+                b.boid.simulate_boid_rules(boids, settings)
+            # update the position in the boid into the tree
+            btree.reinsert_node(b)
 
         draw_window(settings, screen, boids)
         clock.tick(settings.fps)
