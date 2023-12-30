@@ -186,5 +186,26 @@ class BinaryTree:
                 current = current.parent
 
         return result
+    
+    def traverse_values(self) -> List[int]:
+        if self.count == 0:
+            return []
+        
+        if self.count == 1:
+            return [self.root.value()]
+        
+        result = []
+        current = self.min(self.root)
+        while True:
+            result.append(current.value())
+            if current.right is not None:
+                current = self.min(current.right)
+            else:
+                while current.parent is not None and current.parent.right is current: current = current.parent
+                if current.parent is None:
+                    break
+                current = current.parent
+
+        return result
 
 
