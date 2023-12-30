@@ -24,6 +24,9 @@ class Node(ABC):
     
     def __eq__(self, other) -> bool:
         return isinstance(other, Node) and self.value() == other.value()
+    
+    def __le__(self, other) -> bool:
+        return isinstance(other, Node) and self.value() <= other.value()
 
 
 class BinaryTree:
