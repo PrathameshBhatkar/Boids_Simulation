@@ -116,10 +116,28 @@ class BinaryTree:
             self.root = None
             self.count = 0
             return
+        
+        if n.right is None and n.left is None:
+            # there are no children
+            # the count is > 1 so we cannot be the root node and be a leaf
+            if n.parent.right is n:
+                n.parent.right = None
+            else:
+                n.parent.left = None
+            n.parent = None
+            self.count -= 1
+            return
 
         replacement = self.min(n.right)
         if replacement is None:
             replacement = self.max(n.left)
+
+        # detach replacement node
+        if replacement.parent is not None:
+            if replacement.parent.right is replacement:
+                replacement.parent.right = None
+            else:
+                replacement.parent.left = None
         replacement.parent = None  # we know at this point one of these must not be None
 
         if n is self.root:
@@ -128,6 +146,12 @@ class BinaryTree:
         replacement.parent = n.parent
         if n.right is not replacement: replacement.right = n.right
         if n.left is not replacement: replacement.left = n.left
+
+        if n.parent is not None:
+            if n.parent.right is n:
+                n.parent.right = replacement
+            else:
+                n.parent.left = replacement
 
         self.count -= 1
 
