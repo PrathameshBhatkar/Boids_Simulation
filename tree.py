@@ -54,6 +54,30 @@ class BinaryTree:
                 current = current.right
 
         return True 
+    
+    def __repr__(self) -> str:
+        lines = ['tree:']
+        if self.count == 0:
+            return 'tree: empty'
+        
+        lines.append(f'root: {self.root.value()}')
+
+        stack = [(self.root.right, True, 1), (self.root.left, False, 1)]
+        while len(stack) > 0:
+            node, right, depth = stack[-1]
+            stack = stack[:-1]
+
+            indent = '\t'*depth
+
+            if node is None:
+                lines.append(f'{indent}{"right" if right else "left"}: None')
+                continue
+
+            lines.append(f'{indent}{"right" if right else "left"}: {node.value()}')
+
+            stack.append((node.right, True, depth+1))
+            stack.append((node.left, False, depth+1))
+        return '\n'.join(lines)
 
     def add_node(self, n: Node):
         """
@@ -132,6 +156,17 @@ class BinaryTree:
         if replacement is None:
             replacement = self.max(n.left)
 
+        if n is self.root:
+            self.root = replacement
+
+        replacement.parent = n.parent
+        if n.right is not replacement: 
+            replacement.right = n.right
+            if n.right is not None: n.right.parent = replacement
+        if n.left is not replacement: 
+            replacement.left = n.left
+            if n.left is not None: n.left.parent = replacement
+
         # detach replacement node
         if replacement.parent is not None:
             if replacement.parent.right is replacement:
@@ -140,18 +175,16 @@ class BinaryTree:
                 replacement.parent.left = None
         replacement.parent = None  # we know at this point one of these must not be None
 
-        if n is self.root:
-            self.root = replacement
-
-        replacement.parent = n.parent
-        if n.right is not replacement: replacement.right = n.right
-        if n.left is not replacement: replacement.left = n.left
-
         if n.parent is not None:
             if n.parent.right is n:
                 n.parent.right = replacement
             else:
                 n.parent.left = replacement
+
+        # fully detach the current node
+        n.parent = None
+        n.right = None
+        n.left = None
 
         self.count -= 1
 

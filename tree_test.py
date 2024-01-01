@@ -122,3 +122,240 @@ class TestBinaryTree(unittest.TestCase):
         tc.delete_node(tc.root)
         self.assertEqual(len(tc), len(testdata)-6, 'expected correct node count')
         self.assertEqual(tc.root.value(), 4, 'expected the correct replacement when deleting the root')
+
+    def test_reinsertion(self):
+        testdata = [1005344, 137029, 1972421, 1937498, 1925201]
+
+        def build_test_tree() -> BinaryTree:
+            t = BinaryTree()
+            for d in testdata:
+                t.add_node(TestNode(d))
+            return t
+        
+        def validate_reinsertion(node, new_value, replacement_value, replacement_position):
+            self.assertIsNotNone(node, 'new node should be reinserted into the right position')
+            self.assertEqual(node.value(), new_value, 'new node should have been inserted')
+            self.assertEqual(replacement_position.value(), replacement_value, 'node should have been replaced with the correct value')
+
+        def perform_validated_reinsert(tr, new_node, new_value, replacement_value, original_node):
+            on = original_node(tr)
+            on.v = new_value
+            tr.reinsert_node(on)
+            validate_reinsertion(new_node(tr), new_value, replacement_value, original_node(tr))
+            print('new tree:')
+            print(tr)
+
+        tc = build_test_tree()
+
+        """
+        1005344
+            137029
+
+            1972421
+                1937498
+                    1925201
+        """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.left.right, 996576, 1925201, lambda tr: tr.root)
+        
+        """
+        1925201
+            137029
+                None
+
+                996576
+
+            1972421
+                1937498
+        """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.right.right, 1989604, 1937498, lambda tr: tr.root.right)
+
+    def test_reinsertion_2(self):
+        """
+        tree:
+        root: 1697105
+                left: 384151
+                        left: 318798
+                                left: 22284
+                                        left: None
+                                        right: None
+                                right: None
+                        right: 1604855
+                                left: None
+                                right: None
+                right: None
+        updating: 384151
+        new node value: 386628
+        updating: 318798
+        new node value: 310955
+        updating: 22284
+        new node value: 19588
+        updating: 1697105
+        new node value: 1671160
+        updating: 1604855
+        new node value: 1614889
+        tree:
+        root: 1671160
+                left: 1614889
+                        left: None
+                        right: None
+                right: None
+        """
+        testdata = [1697105, 384151, 318798, 22284, 1604855]
+
+        def build_test_tree() -> BinaryTree:
+            t = BinaryTree()
+            for d in testdata:
+                t.add_node(TestNode(d))
+            return t
+        
+        def validate_reinsertion(node, new_value, replacement_value, replacement_position):
+            self.assertIsNotNone(node, 'new node should be reinserted into the right position')
+            self.assertEqual(node.value(), new_value, 'new node should have been inserted')
+            self.assertEqual(replacement_position.value(), replacement_value, 'node should have been replaced with the correct value')
+
+        def perform_validated_reinsert(tr, new_node, new_value, replacement_value, original_node):
+            on = original_node(tr)
+            on.v = new_value
+            tr.reinsert_node(on)
+            validate_reinsertion(new_node(tr), new_value, replacement_value, original_node(tr))
+            print('new tree:')
+            print(tr)
+
+        tc = build_test_tree()
+
+        print(tc)
+
+        """
+        1697105
+            384151
+                318798
+                    22284
+
+                1604855
+        """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.left.left.right, 386628, 1604855, lambda tr: tr.root.left)
+        
+        """
+        1697105
+            1604855
+                318798
+                    22284
+
+                    386628
+        """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.left.left.left.right, 310955, 386628, lambda tr: tr.root.left.left)
+        
+        """
+        1697105
+            1604855
+                386628
+                    22284
+                        None
+
+                        310955
+        """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.left.left.left.left, 19588, 310955, lambda tr: tr.root.left.left.left)
+        
+        """
+        1697105
+            1604855
+                386628
+                    310955
+                        19588
+        """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.right, 1671160, 1604855, lambda tr: tr.root)
+        
+        """
+        1604855
+            386628
+                310955
+                    19588
+
+            1671160
+        """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.left.right, 1614889, 1671160, lambda tr: tr.root)
+        
+        """
+        1671160
+            386628
+                310955
+                    19588
+
+                1614889
+        """
+
+    def test_reinsertion_3(self):
+        """
+        tree:
+        root: 379865
+                left: None
+                right: 1670472
+                        left: 476740
+                                left: None
+                                right: 1121625
+                                        left: 999720
+                                                left: None
+                                                right: None
+                                        right: None
+                        right: None
+        updating: 379865
+        new node value: 374816
+        updating: 1670472
+        new node value: 1644946
+        updating: 476740
+        new node value: 484519
+        """
+        testdata = [379865, 1670472, 476740, 1121625, 999720]
+
+        def build_test_tree() -> BinaryTree:
+            t = BinaryTree()
+            for d in testdata:
+                t.add_node(TestNode(d))
+            return t
+        
+        def validate_reinsertion(node, new_value, replacement_value, replacement_position):
+            self.assertIsNotNone(node, 'new node should be reinserted into the right position')
+            self.assertEqual(node.value(), new_value, 'new node should have been inserted')
+            self.assertEqual(replacement_position.value(), replacement_value, 'node should have been replaced with the correct value')
+
+        def perform_validated_reinsert(tr, new_node, new_value, replacement_value, original_node):
+            on = original_node(tr)
+            on.v = new_value
+            tr.reinsert_node(on)
+            validate_reinsertion(new_node(tr), new_value, replacement_value, original_node(tr))
+            print('new tree:')
+            print(tr)
+
+        tc = build_test_tree()
+
+        print(tc)
+
+        """
+        379865
+            None
+
+            1670472
+                476740
+                    None
+
+                    1121625
+                        999720
+        """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.left.left, 374816, 1670472, lambda tr: tr.root)
+
+        """
+        1670472
+            476740
+                374816
+
+                1121625
+                    999720
+        """
