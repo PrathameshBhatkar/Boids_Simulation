@@ -7,6 +7,9 @@ class TestNode(Node):
         super().__init__()
         self.v = v
 
+    def __repr__(self) -> str:
+        return super().__repr__()
+
     def value(self) -> int:
         return self.v
     
@@ -59,6 +62,8 @@ class TestBinaryTree(unittest.TestCase):
         self.assertEqual(len(tc), len(testdata)-1, 'expected correct node count')
         self.assertEqual(tc.root.right.value(), 9, 'expected the correct replacment value when using the min of the right')
 
+        print(tc)
+
         """
              5
            /   \
@@ -72,6 +77,8 @@ class TestBinaryTree(unittest.TestCase):
         tc.delete_node(tc.root.right)
         self.assertEqual(len(tc), len(testdata)-2, 'expected correct node count')
         self.assertEqual(tc.root.right.value(), 10, 'expected the correct replacment value when using the right child')
+
+        print(tc)
 
         """
              5

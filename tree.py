@@ -12,6 +12,36 @@ class Node(ABC):
         self.right: Optional[Node] = None
         self.parent: Optional[Node] = None
 
+    def __repr__(self) -> str:
+        return self.value()
+
+    def detach_parent(self):
+        t = self.parent
+        self.parent = None
+        if t is not None:
+            if t.right is self:
+                t.right = None
+            else:
+                t.left = None
+        return t
+    
+    def detach_left(self):
+        t = self.left
+        self.left = None
+        if t is not None:
+            t.parent = None
+        return t
+    
+    def detach_right(self):
+        t = self.right
+        self.right = None
+        if t is not None:
+            t.parent = None
+        return t
+    
+    def detach(self):
+        return self.detach_parent(), self.detach_left(), self.detach_right()
+
     @abstractmethod
     def value(self) -> int:
         pass
@@ -151,40 +181,30 @@ class BinaryTree:
             n.parent = None
             self.count -= 1
             return
+        
+        np, nl, nr = n.detach()
 
-        replacement = self.min(n.right)
+        replacement = self.min(nr)
         if replacement is None:
-            replacement = self.max(n.left)
+            replacement = self.max(nl)
+        # replacement cannot be None at this point because we check for that on line 171
+
+        rp = replacement.detach_parent()
+
+        if rp is not n:
+            self.max(replacement).right = nr
+            self.min(replacement).left = nl
 
         if n is self.root:
             self.root = replacement
-
-        replacement.parent = n.parent
-        if n.right is not replacement: 
-            replacement.right = n.right
-            if n.right is not None: n.right.parent = replacement
-        if n.left is not replacement: 
-            replacement.left = n.left
-            if n.left is not None: n.left.parent = replacement
-
-        # detach replacement node
-        if replacement.parent is not None:
-            if replacement.parent.right is replacement:
-                replacement.parent.right = None
+        else:
+            replacement.parent = np
+            # one of the children of the parent is None
+            # but they could both be so we need to do a comparison to be sure which child it should be
+            if replacement.value() > np.value():
+                np.right = replacement
             else:
-                replacement.parent.left = None
-        replacement.parent = None  # we know at this point one of these must not be None
-
-        if n.parent is not None:
-            if n.parent.right is n:
-                n.parent.right = replacement
-            else:
-                n.parent.left = replacement
-
-        # fully detach the current node
-        n.parent = None
-        n.right = None
-        n.left = None
+                np.left = replacement
 
         self.count -= 1
 
