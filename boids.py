@@ -3,6 +3,8 @@ import random
 import pygame
 from pygame.math import Vector2
 
+from tree import BinaryTree
+
 
 COLOR_LITTLE_LIGHT_BLUE = (0, 150, 255)
 COLOR_PINK = (255, 0, 255)
@@ -52,25 +54,20 @@ class Boid:
     def dist_not_squared(p1: Vector2, p2: Vector2):
         return (abs(p1.x - p2.x) ** 2) + (abs(p1.y - p2.y) ** 2)
 
-    def simulate_boid_rules(self, boids, settings):
+    def simulate_boid_rules(self, boids: BinaryTree, settings):
         # make a list of nearby boids
-        nearby_boids = []
-        for b in boids:
-            if b != self:
-                d = self.dist_not_squared(b.pos, self.pos) ** .5
-                if d < self.view_distance:
-                    # if the boid is in the view distance add the boid to the nearby_boids list
-                    nearby_boids.append(b)
+        edist = self.pos.length_squared()
+        nearby_boids = boids.find_interval(edist - self.view_distance, edist + self.view_distance)
+        for b in nearby_boids:
+            if settings.can_align:
+                self.dir += b.boid.dir / settings.direction
+            if settings.can_repel:
+                dir = (self.pos - b.boid.pos)
+                if dir != ZERO_VECTOR:
+                    dir = dir.normalize() / settings.repel
+                    self.dir += dir
 
-                    if settings.can_align:
-                        self.dir += b.dir / settings.direction
-                    if settings.can_repel:
-                        dir = (self.pos - b.pos)
-                        if dir != ZERO_VECTOR:
-                            dir = dir.normalize() / settings.repel
-                            self.dir += dir
-
-                    self.dir = self.dir.normalize()
+            self.dir = self.dir.normalize()
 
         # loop over nearby_boids
         # find average of the positions of the nearby_boids
@@ -78,7 +75,7 @@ class Boid:
             try:
                 average_pos = Vector2(0, 0)
                 # add all the positions of the nearby_boids to the average_pos
-                for b in nearby_boids: average_pos += b.pos
+                for b in nearby_boids: average_pos += b.boid.pos
                 average_pos /= len(nearby_boids)
                 # find the direction of the average_pos
                 dir = average_pos - self.pos

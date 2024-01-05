@@ -7,5 +7,5 @@ class BoidNode(Node):
         super().__init__()
         self.boid = b
 
-    def value(self) -> int:
-        return int(self.boid.pos.length_squared())
+    def value(self) -> float:
+        return self.boid.pos.length_squared()

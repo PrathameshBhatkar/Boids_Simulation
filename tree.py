@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, List
+from typing import Optional, List, Union
 
 
 class Node(ABC):
@@ -19,7 +19,7 @@ class Node(ABC):
         return self.left is None and self.right is None
 
     @abstractmethod
-    def value(self) -> int:
+    def value(self) -> Union[int, float]:
         pass
 
     def __lt__(self, other) -> bool:
@@ -220,7 +220,7 @@ class BinaryTree:
                         return current.parent
                     return None
 
-    def find_interval(self, lower: int, upper: int) -> List[Node]:
+    def find_interval(self, lower: Union[int, float], upper: Union[int, float]) -> List[Node]:
         """
         finds the set of nodes in the range [lower, upper] (inclusive)
         """

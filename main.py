@@ -94,6 +94,8 @@ if __name__ == '__main__':
         btree.add_node(b)
 
     while True:
+        print(btree)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -145,11 +147,13 @@ if __name__ == '__main__':
 
         # update all the boids
         for b in boids:
+            print(f'updating: {b.value()}')
             b.boid.update(settings)
             # if the variable can_simulate is true, then call the simulate function
             if settings.simulate:
-                b.boid.simulate_boid_rules(boids, settings)
+                b.boid.simulate_boid_rules(btree, settings)
             # update the position in the boid into the tree
+            print(f'new node value: {b.value()}')
             btree.reinsert_node(b)
 
         draw_window(settings, screen, boids)
