@@ -366,3 +366,6 @@ class TestBinaryTree(unittest.TestCase):
 
         perform_validated_reinsert(tc, lambda tr: tr.root.right.right, 2377867, 255618, lambda tr: tr.root.left)
 
+
+# TODO add tests for the interval search method
+
