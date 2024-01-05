@@ -54,15 +54,10 @@ class TestBinaryTree(unittest.TestCase):
             return t
 
         tc = build_test_tree()
-        tc.delete_node(TestNode(17))
-        output = tc.traverse_values()
-        self.assertEqual(output, list(sorted(testdata)), 'delete when not in the tree should do nothing')
 
         tc.delete_node(tc.root.right)
         self.assertEqual(len(tc), len(testdata)-1, 'expected correct node count')
         self.assertEqual(tc.root.right.value(), 9, 'expected the correct replacment value when using the min of the right')
-
-        print(tc)
 
         """
              5
@@ -78,8 +73,6 @@ class TestBinaryTree(unittest.TestCase):
         self.assertEqual(len(tc), len(testdata)-2, 'expected correct node count')
         self.assertEqual(tc.root.right.value(), 10, 'expected the correct replacment value when using the right child')
 
-        print(tc)
-
         """
              5
            /   \
@@ -92,24 +85,24 @@ class TestBinaryTree(unittest.TestCase):
 
         tc.delete_node(tc.root.right)
         self.assertEqual(len(tc), len(testdata)-3, 'expected correct node count')
-        self.assertEqual(tc.root.right.value(), 7, 'expected the correct replacment value when using the max of the left')
-
-        """
-             5
-           /   \
-          3     7
-         / \   /   
-        2   4 6     
-        """
-
-        tc.delete_node(tc.root.right)
-        self.assertEqual(len(tc), len(testdata)-4, 'expected correct node count')
-        self.assertEqual(tc.root.right.value(), 6, 'expected the correct replacment value when using the left child')
+        self.assertEqual(tc.root.right.value(), 6, 'expected the correct replacment value when using the max of the left')
 
         """
              5
            /   \
           3     6
+         / \     \   
+        2   4     7 
+        """
+
+        tc.delete_node(tc.root.right)
+        self.assertEqual(len(tc), len(testdata)-4, 'expected correct node count')
+        self.assertEqual(tc.root.right.value(), 7, 'expected the correct replacment value when using the left child')
+
+        """
+             5
+           /   \
+          3     7
          / \    
         2   4     
         """
@@ -128,7 +121,7 @@ class TestBinaryTree(unittest.TestCase):
 
         tc.delete_node(tc.root)
         self.assertEqual(len(tc), len(testdata)-6, 'expected correct node count')
-        self.assertEqual(tc.root.value(), 4, 'expected the correct replacement when deleting the root')
+        self.assertEqual(tc.root.value(), 3, 'expected the correct replacement when deleting the root')
 
     def test_reinsertion(self):
         testdata = [1005344, 137029, 1972421, 1937498, 1925201]
@@ -301,25 +294,29 @@ class TestBinaryTree(unittest.TestCase):
     def test_reinsertion_3(self):
         """
         tree:
-        root: 379865
+        root: 255020
+            left: 130863
+                left: 1832
+                    left: None
+                    right: None
+                right: None
+            right: 379689
                 left: None
-                right: 1670472
-                        left: 476740
-                                left: None
-                                right: 1121625
-                                        left: 999720
-                                                left: None
-                                                right: None
-                                        right: None
-                        right: None
-        updating: 379865
-        new node value: 374816
-        updating: 1670472
-        new node value: 1644946
-        updating: 476740
-        new node value: 484519
+                right: 422731
+                    left: None
+                    right: None
+        updating: 255020
+        new node value: 256618
+        updating: 130863
+        new node value: 2377867
+        updating: 379689
+        new node value: 390544
+        updating: 1832
+        new node value: 641253
+        updating: 422731
+        new node value: 431078
         """
-        testdata = [379865, 1670472, 476740, 1121625, 999720]
+        testdata = [255020, 130863, 1832, 379689, 422731]
 
         def build_test_tree() -> BinaryTree:
             t = BinaryTree()
@@ -345,24 +342,27 @@ class TestBinaryTree(unittest.TestCase):
         print(tc)
 
         """
-        379865
-            None
+        255020
+            130863
+                1832
 
-            1670472
-                476740
-                    None
+            379689
+                None
 
-                    1121625
-                        999720
+                422731
         """
 
-        perform_validated_reinsert(tc, lambda tr: tr.root.left.left, 374816, 1670472, lambda tr: tr.root)
+        perform_validated_reinsert(tc, lambda tr: tr.root.left.right, 255618, 379689, lambda tr: tr.root)
 
         """
-        1670472
-            476740
-                374816
+        379689
+            130863
+                1832
 
-                1121625
-                    999720
+                255618
+
+            422731
         """
+
+        perform_validated_reinsert(tc, lambda tr: tr.root.right.right, 2377867, 255618, lambda tr: tr.root.left)
+

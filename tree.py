@@ -14,33 +14,9 @@ class Node(ABC):
 
     def __repr__(self) -> str:
         return self.value()
-
-    def detach_parent(self):
-        t = self.parent
-        self.parent = None
-        if t is not None:
-            if t.right is self:
-                t.right = None
-            else:
-                t.left = None
-        return t
     
-    def detach_left(self):
-        t = self.left
-        self.left = None
-        if t is not None:
-            t.parent = None
-        return t
-    
-    def detach_right(self):
-        t = self.right
-        self.right = None
-        if t is not None:
-            t.parent = None
-        return t
-    
-    def detach(self):
-        return self.detach_parent(), self.detach_left(), self.detach_right()
+    def is_leaf(self) -> bool:
+        return self.left is None and self.right is None
 
     @abstractmethod
     def value(self) -> int:
@@ -159,52 +135,50 @@ class BinaryTree:
         while current.right is not None: current = current.right
         return current
     
+    def transplant(self, x: Node, y: Optional[Node]):
+        if x.parent is None:
+            self.root = y
+        elif x is x.parent.left:
+            x.parent.left = y
+        else:
+            x.parent.right = y
+        
+        if y is not None:
+            y.parent = x.parent
+    
     def delete_node(self, n: Node):
         """
-        removes a node from the tree, if it exists
+        removes a node from the tree
+        does not check if the node exists within the tree first
         """
-        if n not in self:
-            return
         
         if self.count == 1:
             self.root = None
             self.count = 0
             return
         
-        if n.right is None and n.left is None:
-            # there are no children
+        if n.is_leaf():
             # the count is > 1 so we cannot be the root node and be a leaf
-            if n.parent.right is n:
-                n.parent.right = None
-            else:
+            if n.parent.left is n:
                 n.parent.left = None
-            n.parent = None
+            else:
+                n.parent.right = None
             self.count -= 1
             return
         
-        np, nl, nr = n.detach()
-
-        replacement = self.min(nr)
-        if replacement is None:
-            replacement = self.max(nl)
-        # replacement cannot be None at this point because we check for that on line 171
-
-        rp = replacement.detach_parent()
-
-        if rp is not n:
-            self.max(replacement).right = nr
-            self.min(replacement).left = nl
-
-        if n is self.root:
-            self.root = replacement
+        if n.left is None:
+            self.transplant(n, n.right)
+        elif n.right is None:
+            self.transplant(n, n.left)
         else:
-            replacement.parent = np
-            # one of the children of the parent is None
-            # but they could both be so we need to do a comparison to be sure which child it should be
-            if replacement.value() > np.value():
-                np.right = replacement
-            else:
-                np.left = replacement
+            rep = self.min(n.right)
+            if rep.parent is not n:
+                self.transplant(rep, rep.right)
+                rep.right = n.right
+                rep.right.parent = rep
+            self.transplant(n, rep)
+            rep.left = n.left
+            rep.left.parent = rep
 
         self.count -= 1
 
@@ -215,6 +189,12 @@ class BinaryTree:
         this can be used to update nodes after their values have changed.
         """
         self.delete_node(n)
+
+        # completely detach node to prepare for reinsertion
+        n.parent = None
+        n.left = None
+        n.right = None
+
         self.add_node(n)
     
     def find_lower_limit(self, limit: int) -> Optional[Node]:
